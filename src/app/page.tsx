@@ -25,7 +25,8 @@ export default function Overview() {
         setTransactions(transactionsData.slice(0, 5)); // Show only recent 5
         setLoading(false);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Data fetch error details:', error);
+        // We could set an error state here to display to the user
         setLoading(false);
       }
     }
@@ -46,7 +47,10 @@ export default function Overview() {
     return (
       <div className={styles.container}>
         <div style={{ textAlign: 'center', padding: '60px', color: '#FF4D6D' }}>
-          Failed to load data
+          <h3>Failed to load data</h3>
+          <p style={{ fontSize: '14px', marginTop: '10px', opacity: 0.8 }}>
+            Please check your internet connection or try again later.
+          </p>
         </div>
       </div>
     );

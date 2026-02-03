@@ -66,3 +66,23 @@
     padding-top: 24px;
     border-top: 1px solid var(--color-border);
 }
+
+.collapsed {
+    width: 80px;
+    align-items: center;
+}
+
+.collapsed .navItem {
+    justify-content: center;
+    padding: 12px;
+}
+
+.collapsed .logo {
+    justify-content: center;
+    margin-bottom: 32px;
+}
+
+.collapsed .logoIcon {
+    width: 40px;
+    height: 40px;
+}

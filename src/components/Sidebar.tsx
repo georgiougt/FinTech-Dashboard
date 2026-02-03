@@ -10,10 +10,12 @@ import {
     PieChart,
     Receipt,
     Settings,
-    ChevronLeft
+    ChevronLeft,
+    ChevronRight // Added right chevron
 } from 'lucide-react';
 import styles from './Sidebar.module.css';
 import clsx from 'clsx';
+import { useSidebar } from '@/context/SidebarContext'; // Import context
 
 const MENU_ITEMS = [
     { name: 'Overview', path: '/', icon: LayoutGrid },
@@ -27,12 +29,13 @@ const MENU_ITEMS = [
 
 export default function Sidebar() {
     const pathname = usePathname();
+    const { isCollapsed, toggleSidebar } = useSidebar(); // Consume context
 
     return (
-        <aside className={styles.sidebar}>
+        <aside className={clsx(styles.sidebar, isCollapsed && styles.collapsed)}>
             <div className={styles.logo}>
                 <div className={styles.logoIcon}>金</div>
-                <span>Kintsugi</span>
+                {!isCollapsed && <span>Kintsugi</span>}
             </div>
 
             <nav className={styles.nav}>
@@ -43,18 +46,19 @@ export default function Sidebar() {
                             key={item.path}
                             href={item.path}
                             className={clsx(styles.navItem, isActive && styles.navItemActive)}
+                            title={isCollapsed ? item.name : undefined} // Tooltip on collapse
                         >
                             <item.icon size={20} />
-                            <span>{item.name}</span>
+                            {!isCollapsed && <span>{item.name}</span>}
                         </Link>
                     );
                 })}
             </nav>
 
             <div className={styles.footer}>
-                <button className={styles.navItem}>
-                    <ChevronLeft size={20} />
-                    <span>Collapse</span>
+                <button className={styles.navItem} onClick={toggleSidebar}>
+                    {isCollapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
+                    {!isCollapsed && <span>Collapse</span>}
                 </button>
             </div>
         </aside>
