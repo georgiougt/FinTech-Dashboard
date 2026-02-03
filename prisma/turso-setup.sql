@@ -23,8 +23,8 @@ CREATE TABLE IF NOT EXISTS Account (
     FOREIGN KEY (userId) REFERENCES User(id)
 );
 
--- Create Transaction table
-CREATE TABLE IF NOT EXISTS Transaction (
+-- Create Transactions table
+CREATE TABLE IF NOT EXISTS Transactions (
     id TEXT PRIMARY KEY,
     merchant TEXT NOT NULL,
     category TEXT NOT NULL,

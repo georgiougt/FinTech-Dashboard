@@ -42,6 +42,8 @@ model Transaction {
   accountId   String
   account     Account  @relation(fields: [accountId], references: [id])
   createdAt   DateTime @default(now())
+
+  @@map("Transactions")
 }
 
 model Card {
