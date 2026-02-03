@@ -1,36 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Kintsugi FinTech Dashboard
 
-## Getting Started
+A modern, frontend-only FinTech dashboard with a Japanese "Tokyo Night" aesthetic.
 
-First, run the development server:
+## Tech Stack
+- **Framework**: Next.js 14+ (App Router)
+- **Styling**: Vanilla CSS (CSS Modules) + CSS Variables
+- **Icons**: Lucide React
+- **Charts**: Recharts
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Setup & Run
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+1. Open the terminal.
+2. Navigate to the project directory:
+   ```bash
+   cd app
+   ```
+3. Install dependencies (if not already):
+   ```bash
+   npm install
+   ```
+4. Run the development server:
+   ```bash
+   npm run dev
+   ```
+5. Open [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Design System
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The Japanese theme is defined in `src/app/globals.css`.
+- **Sumi Ink (#0B0F14)**: Background
+- **Aizome Indigo (#1B2A41)**: Cards/Nav
+- **Sakura Pink (#FF4D6D)**: Primary Accents
+- **Kintsugi Gold (#C8A44D)**: Premium Highlights
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Features Implemented
+- **Overview**: KPI cards, Cashflow Chart, Recent Transactions.
+- **Accounts**: List of accounts with "Add Account" modal.
+- **Transactions**: Full history with filter UI and details drawer.
+- **Cards**: Visual card carousel and management options.
+- **Analytics**: Spend breakdown and merchant leaderboard.
+- **Bills**: Subscription tracker and timeline.
+- **Settings**: Profile and preferences (Dark mode locked on).

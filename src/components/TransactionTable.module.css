@@ -1,0 +1,81 @@
+.container {
+
+    overflow-x: auto;
+    padding: 0;
+}
+
+.header {
+    padding: 24px 24px 16px;
+    border-bottom: 1px solid var(--color-border);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--color-shiro);
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.table th {
+    text-align: left;
+    padding: 16px 24px;
+    color: var(--color-gofun-gray);
+    font-weight: 500;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.table td {
+    padding: 16px 24px;
+    color: var(--color-shiro);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.table tr:last-child td {
+    border-bottom: none;
+}
+
+.table tr:hover {
+    background-color: rgba(255, 255, 255, 0.02);
+    cursor: pointer;
+}
+
+.merchantIcon {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.iconPlaceholder {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(255, 77, 109, 0.1), rgba(27, 42, 65, 0.5));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.categoryTag {
+    font-size: 12px;
+    color: var(--color-gofun-gray);
+    padding: 2px 8px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.03);
+    margin-top: 4px;
+}
+
+.amount {
+    font-weight: 600;
+    text-align: right;
+}
+
+.amountIncoming {
+    color: var(--color-matcha-green);
+}
+
+.amountOutgoing {
+    color: var(--color-shiro);
+}

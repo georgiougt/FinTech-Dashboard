@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(cuid())
+  name      String
+  email     String    @unique
+  avatar    String?
+  accounts  Account[]
+  bills     Bill[]
+  createdAt DateTime  @default(now())
+}
+
+model Account {
+  id            String        @id @default(cuid())
+  name          String
+  type          String        // Checking, Savings, Business, Crypto
+  balance       Float
+  accountNumber String
+  currency      String        @default("USD")
+  userId        String
+  user          User          @relation(fields: [userId], references: [id])
+  transactions  Transaction[]
+  cards         Card[]
+  createdAt     DateTime      @default(now())
+}
+
+model Transaction {
+  id          String   @id @default(cuid())
+  merchant    String
+  category    String
+  date        DateTime
+  amount      Float
+  status      String   // success, pending, failed
+  type        String   // incoming, outgoing
+  accountId   String
+  account     Account  @relation(fields: [accountId], references: [id])
+  createdAt   DateTime @default(now())
+}
+
+model Card {
+  id        String   @id @default(cuid())
+  name      String
+  last4     String
+  holder    String
+  expiry    String
+  network   String   // visa, mastercard, amex
+  limit     Float    @default(0)
+  spent     Float    @default(0)
+  color     String   // CSS gradient string
+  isVirtual Boolean  @default(false)
+  isFrozen  Boolean  @default(false)
+  accountId String
+  account   Account  @relation(fields: [accountId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Bill {
+  id        String   @id @default(cuid())
+  name      String
+  amount    Float
+  dueDate   String
+  category  String
+  logo      String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+}

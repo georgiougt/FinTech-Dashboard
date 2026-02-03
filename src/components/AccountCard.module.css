@@ -1,0 +1,81 @@
+.card {
+
+    position: relative;
+    transition: transform 0.2s;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    border-color: var(--color-sakura-pink);
+}
+
+.top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.type {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--color-gofun-gray);
+    margin-bottom: 8px;
+}
+
+.name {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--color-shiro);
+}
+
+.icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-sakura-pink);
+}
+
+.balanceLabel {
+    font-size: 12px;
+    color: var(--color-gofun-gray);
+    margin-bottom: 4px;
+}
+
+.balance {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--color-shiro);
+}
+
+.footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--color-border);
+}
+
+.number {
+    font-family: monospace;
+    color: var(--color-gofun-gray);
+    font-size: 14px;
+}
+
+.actionBtn {
+    background: none;
+    border: none;
+    color: var(--color-sakura-pink);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+}

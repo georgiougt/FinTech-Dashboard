@@ -1,0 +1,71 @@
+.container {
+    width: 340px;
+    height: 220px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02));
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    margin-right: 24px;
+}
+
+.glow {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, var(--color-sakura-pink), transparent 70%);
+    opacity: 0.2;
+    top: -50px;
+    right: -50px;
+    filter: blur(40px);
+}
+
+.chip {
+    width: 40px;
+    height: 30px;
+    background: linear-gradient(135deg, #FFD700, #DAA520);
+    border-radius: 6px;
+    margin-bottom: 24px;
+    position: relative;
+    z-index: 2;
+}
+
+.number {
+    font-family: monospace;
+    font-size: 22px;
+    letter-spacing: 2px;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    z-index: 2;
+}
+
+.footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    z-index: 2;
+}
+
+.holder {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.8;
+}
+
+.expiry {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.logo {
+    font-weight: 800;
+    font-style: italic;
+    font-size: 18px;
+}

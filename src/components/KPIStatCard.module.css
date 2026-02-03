@@ -1,0 +1,53 @@
+.card {
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 160px;
+    position: relative;
+    overflow: hidden;
+}
+
+.label {
+    color: var(--color-gofun-gray);
+    font-size: 14px;
+}
+
+.value {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--color-shiro);
+    margin: 8px 0;
+}
+
+.trend {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.trendPositive {
+    color: var(--color-matcha-green);
+}
+
+.trendNegative {
+    color: var(--color-sakura-pink);
+}
+
+.icon {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    width: 48px;
+    height: 48px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(255, 77, 109, 0.15), rgba(27, 42, 65, 0.2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-sakura-pink);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 77, 109, 0.2);
+}

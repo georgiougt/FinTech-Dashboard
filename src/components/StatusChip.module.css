@@ -1,0 +1,27 @@
+.chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+.success {
+    background-color: rgba(43, 182, 115, 0.15);
+    color: var(--color-matcha-green);
+    border: 1px solid rgba(43, 182, 115, 0.2);
+}
+
+.pending {
+    background-color: rgba(201, 193, 184, 0.15);
+    color: var(--color-gofun-gray);
+    border: 1px solid rgba(201, 193, 184, 0.2);
+}
+
+.failed {
+    background-color: rgba(255, 77, 109, 0.15);
+    color: var(--color-sakura-pink);
+    border: 1px solid rgba(255, 77, 109, 0.2);
+}
