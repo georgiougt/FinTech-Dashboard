@@ -8,6 +8,7 @@ const connectionString = process.env.DATABASE_URL
 
 const libsql = createClient({
     url: connectionString || 'file:./dev.db',
+    authToken: process.env.TURSO_AUTH_TOKEN
 })
 
 const adapter = new PrismaLibSQL(libsql)
