@@ -8,24 +8,24 @@ export async function GET() {
 
         // Calculate totals
         const totalIncoming = transactions
-            .filter(t => t.type === 'incoming' && t.status === 'success')
-            .reduce((sum, t) => sum + t.amount, 0);
+            .filter((t: any) => t.type === 'incoming' && t.status === 'success')
+            .reduce((sum: number, t: any) => sum + t.amount, 0);
 
         const totalOutgoing = transactions
-            .filter(t => t.type === 'outgoing' && t.status === 'success')
-            .reduce((sum, t) => sum + t.amount, 0);
+            .filter((t: any) => t.type === 'outgoing' && t.status === 'success')
+            .reduce((sum: number, t: any) => sum + t.amount, 0);
 
         // Group by category
         const categorySpend = transactions
-            .filter(t => t.type === 'outgoing' && t.status === 'success')
-            .reduce((acc, t) => {
+            .filter((t: any) => t.type === 'outgoing' && t.status === 'success')
+            .reduce((acc: Record<string, number>, t: any) => {
                 acc[t.category] = (acc[t.category] || 0) + t.amount;
                 return acc;
             }, {} as Record<string, number>);
 
         // Get account balances
         const accounts = await prisma.account.findMany();
-        const totalBalance = accounts.reduce((sum, a) => sum + a.balance, 0);
+        const totalBalance = accounts.reduce((sum: number, a: any) => sum + a.balance, 0);
 
         return NextResponse.json({
             totalBalance,
