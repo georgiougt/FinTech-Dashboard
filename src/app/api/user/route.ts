@@ -37,6 +37,8 @@ export async function PATCH(request: Request) {
             return NextResponse.json({ error: 'Name and email are required' }, { status: 400 });
         }
 
+        console.log('PATCH /api/user received:', body);
+
         const updatedUser = await prisma.user.update({
             where: { id: DEMO_USER_ID },
             data: {
