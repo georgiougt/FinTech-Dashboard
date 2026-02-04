@@ -13,29 +13,55 @@ export async function GET() {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        // Sync User to Database (Upsert)
+        const email = user.emailAddresses[0].emailAddress;
+
+        // Check if a user with this email already exists but has a different ID (e.g. old Demo User)
+        const existingUserByEmail = await prisma.user.findUnique({
+            where: { email },
+        });
+
+        if (existingUserByEmail && existingUserByEmail.id !== userId) {
+            console.log(`Migrating legacy user ${existingUserByEmail.id} to Clerk user ${userId}`);
+
+            // Perform Migration Transaction
+            await prisma.$transaction(async (tx) => {
+                // 1. Reassign Accounts
+                await tx.account.updateMany({
+                    where: { userId: existingUserByEmail.id },
+                    data: { userId: userId }
+                });
+
+                // 2. Reassign Bills
+                await tx.bill.updateMany({
+                    where: { userId: existingUserByEmail.id },
+                    data: { userId: userId }
+                });
+
+                // 3. Delete old user to free up the email
+                await tx.user.delete({
+                    where: { id: existingUserByEmail.id }
+                });
+            });
+        }
+
+        // Sync User to Database (Upsert) - Now safe from unique constraint
         const dbUser = await prisma.user.upsert({
             where: { id: userId },
             update: {
-                email: user.emailAddresses[0].emailAddress,
+                email: email,
             },
             create: {
                 id: userId,
-                email: user.emailAddresses[0].emailAddress,
+                email: email,
                 name: `${user.firstName} ${user.lastName}`.trim() || 'New User',
                 avatar: user.imageUrl,
                 phone: null
             }
         });
 
-        // Fetch counts manually since upsert doesn't support include easily in one go efficiently without extra query sometimes,
-        // but let's just do a findUnique to get everything if needed, or return dbUser.
-        // Actually, we need the counts for the UI logic likely?
-        // Let's just return the user for now.
-
         return NextResponse.json(dbUser);
     } catch (error: any) {
-        console.error('Error fetching user:', error);
+        console.error('Error fetching/syncing user:', error);
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }
