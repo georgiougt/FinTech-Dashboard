@@ -59,7 +59,14 @@ export interface Analytics {
 async function fetchAPI<T>(endpoint: string): Promise<T> {
     const response = await fetch(`${API_BASE}${endpoint}`);
     if (!response.ok) {
-        throw new Error(`API error: ${response.statusText}`);
+        let errorMsg = response.statusText;
+        try {
+            const errorData = await response.json();
+            if (errorData.error) errorMsg = errorData.error;
+        } catch (e) {
+            // Ignore JSON parse error
+        }
+        throw new Error(errorMsg);
     }
     return response.json();
 }

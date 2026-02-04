@@ -10,9 +10,7 @@ import CashflowChart from '@/components/CashflowChart';
 import { DollarSign, TrendingDown, TrendingUp, Percent } from 'lucide-react';
 
 export default function Overview() {
-  const [analytics, setAnalytics] = useState<Analytics | null>(null);
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchData() {
@@ -24,9 +22,9 @@ export default function Overview() {
         setAnalytics(analyticsData);
         setTransactions(transactionsData.slice(0, 5)); // Show only recent 5
         setLoading(false);
-      } catch (error) {
+      } catch (error: any) {
         console.error('Data fetch error details:', error);
-        // We could set an error state here to display to the user
+        setErrorMsg(error.message || 'Unknown error occurred');
         setLoading(false);
       }
     }
