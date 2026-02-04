@@ -1,15 +1,16 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { auth } from '@clerk/nextjs/server';
 
 export const dynamic = 'force-dynamic';
 
-// TODO: Replace with real auth session
-const DEMO_USER_ID = 'u1';
-
 export async function GET() {
     try {
+        const { userId } = await auth();
+        if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
         const accounts = await prisma.account.findMany({
-            where: { userId: DEMO_USER_ID },
+            where: { userId },
             orderBy: { createdAt: 'desc' },
             include: {
                 _count: {
@@ -25,6 +26,9 @@ export async function GET() {
 
 export async function POST(request: Request) {
     try {
+        const { userId } = await auth();
+        if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
         const body = await request.json();
 
         if (!body.name || !body.type) {
@@ -36,7 +40,7 @@ export async function POST(request: Request) {
 
         const newAccount = await prisma.account.create({
             data: {
-                userId: DEMO_USER_ID,
+                userId,
                 name: body.name,
                 type: body.type,
                 balance: 0, // Start with 0 balance

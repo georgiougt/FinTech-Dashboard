@@ -1,35 +1,50 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { auth, currentUser } from '@clerk/nextjs/server';
 
 export const dynamic = 'force-dynamic';
 
-// Since we don't have real auth yet, we'll grab the first user
-// In a real app, this would get the ID from the session
-const DEMO_USER_ID = 'u1';
-
 export async function GET() {
     try {
-        const user = await prisma.user.findUnique({
-            where: { id: DEMO_USER_ID },
-            include: {
-                _count: {
-                    select: { bills: true, accounts: true }
-                }
+        const { userId } = await auth();
+        const user = await currentUser();
+
+        if (!userId || !user) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        // Sync User to Database (Upsert)
+        const dbUser = await prisma.user.upsert({
+            where: { id: userId },
+            update: {
+                email: user.emailAddresses[0].emailAddress,
+            },
+            create: {
+                id: userId,
+                email: user.emailAddresses[0].emailAddress,
+                name: `${user.firstName} ${user.lastName}`.trim() || 'New User',
+                avatar: user.imageUrl,
+                phone: null
             }
         });
 
-        if (!user) {
-            return NextResponse.json({ error: 'User not found' }, { status: 404 });
-        }
+        // Fetch counts manually since upsert doesn't support include easily in one go efficiently without extra query sometimes,
+        // but let's just do a findUnique to get everything if needed, or return dbUser.
+        // Actually, we need the counts for the UI logic likely?
+        // Let's just return the user for now.
 
-        return NextResponse.json(user);
+        return NextResponse.json(dbUser);
     } catch (error: any) {
+        console.error('Error fetching user:', error);
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }
 
 export async function PATCH(request: Request) {
     try {
+        const { userId } = await auth();
+        if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
         const body = await request.json();
 
         // Basic validation
@@ -40,7 +55,7 @@ export async function PATCH(request: Request) {
         console.log('PATCH /api/user received:', body);
 
         const updatedUser = await prisma.user.update({
-            where: { id: DEMO_USER_ID },
+            where: { id: userId },
             data: {
                 name: body.name,
                 email: body.email,

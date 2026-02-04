@@ -1,19 +1,21 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { auth } from '@clerk/nextjs/server';
 
 export const dynamic = 'force-dynamic';
 
-const DEMO_USER_ID = 'u1';
-
 export async function GET(request: Request) {
     try {
+        const { userId } = await auth();
+        if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
         const { searchParams } = new URL(request.url);
         const limit = searchParams.get('limit');
         const accountId = searchParams.get('accountId');
 
         const where: any = {
             account: {
-                userId: DEMO_USER_ID
+                userId: userId
             }
         };
 
@@ -40,12 +42,24 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
     try {
+        const { userId } = await auth();
+        if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
         const body = await request.json();
         const { accountId, merchant, amount, type, category, date } = body;
 
         // Validation
         if (!accountId || !amount || !merchant || !type) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+        }
+
+        // Verify account belongs to user
+        const account = await prisma.account.findUnique({
+            where: { id: accountId }
+        });
+
+        if (!account || account.userId !== userId) {
+            return NextResponse.json({ error: 'Account not found or unauthorized' }, { status: 403 });
         }
 
         // Use interactive transaction to ensure balance matches history

@@ -1,12 +1,14 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-
-const DEMO_USER_ID = 'u1';
+import { auth } from '@clerk/nextjs/server';
 
 export async function GET() {
     try {
+        const { userId } = await auth();
+        if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
         const bills = await prisma.bill.findMany({
-            where: { userId: DEMO_USER_ID },
+            where: { userId },
             orderBy: {
                 dueDate: 'asc'
             }
@@ -24,6 +26,9 @@ export async function GET() {
 
 export async function POST(request: Request) {
     try {
+        const { userId } = await auth();
+        if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
         const body = await request.json();
 
         if (!body.name || !body.amount || !body.dueDate) {
@@ -32,7 +37,7 @@ export async function POST(request: Request) {
 
         const newBill = await prisma.bill.create({
             data: {
-                userId: DEMO_USER_ID,
+                userId,
                 name: body.name,
                 amount: parseFloat(body.amount),
                 dueDate: body.dueDate, // Expecting string (e.g. "15th") or date string
