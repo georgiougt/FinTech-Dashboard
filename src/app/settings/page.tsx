@@ -2,17 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { User, Moon, Shield, DollarSign, Save, Loader2 } from 'lucide-react';
-
-interface UserProfile {
-    id: string;
-    name: string;
-    email: string;
-    avatar: string | null;
-}
+import { useUser } from '@/context/UserContext';
+import { useRouter } from 'next/navigation';
 
 export default function SettingsPage() {
-    const [profile, setProfile] = useState<UserProfile | null>(null);
-    const [loading, setLoading] = useState(true);
+    const { user, loading: userLoading, updateUser } = useUser();
+
     const [saving, setSaving] = useState(false);
     const [saved, setSaved] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -21,30 +16,19 @@ export default function SettingsPage() {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
-        phone: '' // Note: Phone is not in DB schema yet, keeping as UI-only for now
+        phone: ''
     });
 
+    // Populate form data when user data loads
     useEffect(() => {
-        fetchProfile();
-    }, []);
-
-    const fetchProfile = async () => {
-        try {
-            const res = await fetch('/api/user');
-            if (!res.ok) throw new Error('Failed to load profile');
-            const data = await res.json();
-            setProfile(data);
+        if (user) {
             setFormData({
-                name: data.name,
-                email: data.email,
-                phone: '+81 90 1234 5678' // Mock phone since it's not in DB
+                name: user.name || '',
+                email: user.email || '',
+                phone: user.phone || ''
             });
-        } catch (err: any) {
-            setError(err.message);
-        } finally {
-            setLoading(false);
         }
-    };
+    }, [user]);
 
     const handleSave = async () => {
         setSaving(true);
@@ -55,18 +39,25 @@ export default function SettingsPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     name: formData.name,
-                    email: formData.email
+                    email: formData.email,
+                    phone: formData.phone
                 })
             });
 
             if (!res.ok) throw new Error('Failed to save changes');
 
+            // Optimistically update context immediately
+            updateUser({
+                name: formData.name,
+                email: formData.email,
+                phone: formData.phone
+            });
+
+            // Force a router refresh to update server components if needed
+            // router.refresh();
+
             setSaved(true);
             setTimeout(() => setSaved(false), 3000);
-
-            // Refresh local data
-            const updated = await res.json();
-            setProfile(prev => prev ? { ...prev, ...updated } : updated);
 
         } catch (err: any) {
             setError(err.message);
@@ -75,12 +66,8 @@ export default function SettingsPage() {
         }
     };
 
-    if (loading) {
+    if (userLoading && !user) {
         return <div style={{ padding: '60px', textAlign: 'center', color: '#888' }}><Loader2 className="animate-spin" size={32} style={{ margin: '0 auto 16px' }} />Loading settings...</div>;
-    }
-
-    if (error && !profile) {
-        return <div style={{ padding: '60px', textAlign: 'center', color: '#FF4D6D' }}>Error: {error}</div>;
     }
 
     return (
