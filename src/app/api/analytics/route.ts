@@ -37,13 +37,32 @@ export async function GET() {
         });
         const totalBalance = accounts.reduce((sum: number, a: any) => sum + a.balance, 0);
 
+        // Generate daily activity for the last 7 days
+        const last7Days = Array.from({ length: 7 }, (_, i) => {
+            const d = new Date();
+            d.setDate(d.getDate() - i);
+            return d.toISOString().split('T')[0];
+        }).reverse();
+
+        const dailyActivity = last7Days.map(date => {
+            const dayTotal = transactions
+                .filter((t: any) => t.date.toString().startsWith(date) && t.type === 'outgoing')
+                .reduce((sum: number, t: any) => sum + t.amount, 0);
+
+            return {
+                day: new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+                amount: dayTotal
+            };
+        });
+
         return NextResponse.json({
             totalBalance,
             totalIncoming,
             totalOutgoing,
             savingsRate: totalIncoming > 0 ? (totalIncoming - totalOutgoing) / totalIncoming : 0,
             categorySpend,
-            monthlySpend: totalOutgoing
+            monthlySpend: totalOutgoing,
+            dailyActivity
         });
     } catch (error) {
         console.error('Error fetching analytics:', error);

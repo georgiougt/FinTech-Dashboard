@@ -54,6 +54,7 @@ export interface Analytics {
     savingsRate: number;
     categorySpend: Record<string, number>;
     monthlySpend: number;
+    dailyActivity: { day: string; amount: number }[];
 }
 
 async function fetchAPI<T>(endpoint: string): Promise<T> {

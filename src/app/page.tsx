@@ -93,7 +93,7 @@ export default function Overview() {
       </div>
 
       <div className={styles.chartsGrid}>
-        <CashflowChart />
+        <CashflowChart data={analytics.dailyActivity} />
         <AlertsPanel />
       </div>
 

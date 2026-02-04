@@ -1,9 +1,12 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+const DEMO_USER_ID = 'u1';
+
 export async function GET() {
     try {
         const bills = await prisma.bill.findMany({
+            where: { userId: DEMO_USER_ID },
             orderBy: {
                 dueDate: 'asc'
             }

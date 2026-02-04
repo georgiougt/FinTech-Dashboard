@@ -14,25 +14,13 @@ import {
 import styles from './CashflowChart.module.css';
 import clsx from 'clsx';
 
-const DATA_7D = [
-    { day: 'Jan 28', amount: 150 },
-    { day: 'Jan 29', amount: 450 },
-    { day: 'Jan 30', amount: 1200 },
-    { day: 'Jan 31', amount: 300 },
-    { day: 'Feb 1', amount: 5250 },
-    { day: 'Feb 2', amount: 450 },
-    { day: 'Feb 3', amount: 200 },
-];
 
-const DATA_30D = Array.from({ length: 15 }, (_, i) => ({
-    day: `Jan ${i * 2 + 1}`,
-    amount: Math.floor(Math.random() * 2000) + 500
-}));
 
-export default function CashflowChart() {
+export default function CashflowChart({ data }: { data?: any[] }) {
     const [period, setPeriod] = useState<'7D' | '30D' | '90D'>('7D');
 
-    const data = period === '7D' ? DATA_7D : DATA_30D; // keeping it simple
+    // Fallback if no data provided yet
+    const chartData = data || [];
 
     return (
         <div className={clsx('card', styles.container)}>
@@ -53,7 +41,7 @@ export default function CashflowChart() {
 
             <div className={styles.chartArea}>
                 <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={data} barSize={40}>
+                    <BarChart data={chartData} barSize={40}>
                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.1)" />
                         <XAxis
                             dataKey="day"
@@ -79,7 +67,7 @@ export default function CashflowChart() {
                             formatter={(value: any) => [`$${value}`, 'Amount']}
                         />
                         <Bar dataKey="amount" radius={[4, 4, 0, 0]}>
-                            {data.map((entry, index) => (
+                            {chartData.map((entry, index) => (
                                 <Cell
                                     key={`cell-${index}`}
                                     fill={entry.amount > 1000 ? '#2BB673' : '#FF4D6D'}
