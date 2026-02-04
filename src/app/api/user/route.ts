@@ -67,6 +67,13 @@ export async function GET() {
 
 export async function PATCH(request: Request) {
     console.log('PATCH /api/user HIT');
+    const headersList = request.headers;
+    console.log('Request Headers:', {
+        cookie: headersList.get('cookie') ? `Present (${headersList.get('cookie')?.length} chars)` : 'Missing',
+        authorization: headersList.get('authorization') ? 'Present' : 'Missing',
+        contentType: headersList.get('content-type')
+    });
+
     try {
         const { userId } = await auth();
         if (!userId) {
