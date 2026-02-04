@@ -69,7 +69,10 @@ export async function PATCH(request: Request) {
     console.log('PATCH /api/user HIT');
     try {
         const { userId } = await auth();
-        if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        if (!userId) {
+            console.log('PATCH /api/user: No userId found in session');
+            return NextResponse.json({ error: 'Unauthorized (Session Missing)' }, { status: 401 });
+        }
 
         const body = await request.json();
 
@@ -99,6 +102,7 @@ export async function PATCH(request: Request) {
 
         return NextResponse.json(updatedUser);
     } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        console.error('PATCH /api/user failed:', error);
+        return NextResponse.json({ error: `Server Error: ${error.message}` }, { status: 500 });
     }
 }
