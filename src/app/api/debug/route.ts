@@ -5,68 +5,70 @@ import { createClient } from '@libsql/client';
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-    const url = process.env.DATABASE_URL?.trim();
+    const urlStr = process.env.DATABASE_URL?.trim();
     const authToken = process.env.TURSO_AUTH_TOKEN?.trim();
 
-    // Masking checks for safety
-    const checks: any = {
+    const result: any = {
         config: {
-            urlPresent: !!url,
-            // Show start of protocol
-            urlProtocol: url?.split(':')[0],
-            tokenPresent: !!authToken,
-            tokenLength: authToken?.length
+            urlSet: !!urlStr,
+            tokenSet: !!authToken,
         }
     };
 
     try {
-        // Test 1: Direct LibSQL Client (Bypassing Prisma)
-        // This isolates if the issue is the network/client or Prisma itself
-        try {
-            // Force https for the direct client test to match what we think should work
-            const directUrl = url?.replace(/^(libsql|wss):/i, 'https:') || 'file:./dev.db';
-            checks.usedUrlForDirectTest = directUrl.split(':')[0] + '://...'; // Log protocol only
+        if (urlStr) {
+            // Parse URL to get host
+            // Handle libsql:// by treating it as https:// for parsing purposes if needed
+            const parsableUrl = urlStr.replace(/^(libsql|wss):/i, 'https:');
+            const urlObj = new URL(parsableUrl);
+            const host = urlObj.hostname;
+            const protocol = urlObj.protocol;
 
-            const client = createClient({
-                url: directUrl,
-                authToken: authToken
-            });
+            result.config.parsed = {
+                host: host,
+                protocol: protocol
+            };
 
-            const result = await client.execute("SELECT 1 as val");
-            checks.directLibSql = {
-                status: 'Success',
-                result: result.rows[0]
-            };
-        } catch (libSqlErr: any) {
-            checks.directLibSql = {
-                status: 'Failed',
-                error: libSqlErr.message,
-                code: libSqlErr.code
-            };
+            // Test 3: Raw HTTP Fetch (The "Truth" Test)
+            try {
+                const endpoint = `https://${host}/v2/pipeline`;
+                result.rawFetch = { endpoint };
+
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        requests: [
+                            { type: "execute", stmt: { sql: "SELECT 1 as val" } },
+                            { type: "close" }
+                        ]
+                    })
+                });
+
+                result.rawFetch.status = response.status;
+                result.rawFetch.statusText = response.statusText;
+
+                const text = await response.text();
+                try {
+                    result.rawFetch.body = JSON.parse(text);
+                } catch {
+                    result.rawFetch.bodyRaw = text;
+                }
+
+            } catch (fetchErr: any) {
+                result.rawFetch = {
+                    status: 'ClientError',
+                    error: fetchErr.message
+                };
+            }
         }
 
-        // Test 2: Prisma Connection
-        try {
-            const prismaResult = await prisma.$queryRaw`SELECT 1 as result`;
-            checks.prisma = {
-                status: 'Success',
-                result: prismaResult
-            };
-        } catch (prismaErr: any) {
-            checks.prisma = {
-                status: 'Failed',
-                error: prismaErr.message
-            };
-        }
-
-        return NextResponse.json({ status: 'ok', checks }, { status: 200 });
-
-    } catch (error: any) {
-        return NextResponse.json({
-            status: 'error',
-            message: error.message,
-            stack: error.stack,
-            checks
-        }, { status: 500 });
+    } catch (e: any) {
+        result.error = e.message;
     }
+
+    return NextResponse.json(result, { status: 200 });
 }
