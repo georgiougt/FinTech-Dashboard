@@ -2,9 +2,13 @@
 
 import { Search, Calendar, Bell } from 'lucide-react';
 import styles from './Header.module.css';
-import { USER_PROFILE } from '@/lib/data';
+import { useUser } from '@/context/UserContext';
+import { USER_PROFILE } from '@/lib/data'; // Fallback
 
 export default function Header() {
+    const { user, loading } = useUser();
+    const displayName = user?.name || USER_PROFILE.name;
+
     return (
         <header className={styles.header}>
             <div className={styles.searchContainer}>
@@ -32,9 +36,11 @@ export default function Header() {
                 <div className={styles.userProfile}>
                     <div className={styles.avatar}>
                         {/* Initials */}
-                        {USER_PROFILE.name.split(' ').map(n => n[0]).join('')}
+                        {displayName.split(' ').map((n: string) => n[0]).join('')}
                     </div>
-                    <span className={styles.userName}>{USER_PROFILE.name}</span>
+                    <span className={styles.userName}>
+                        {loading ? '...' : displayName}
+                    </span>
                 </div>
             </div>
         </header>

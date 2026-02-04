@@ -42,7 +42,7 @@ export async function PATCH(request: Request) {
             data: {
                 name: body.name,
                 email: body.email,
-                // Add other fields here if your schema supports them (phone is not in schema yet)
+                phone: body.phone,
             }
         });
 
