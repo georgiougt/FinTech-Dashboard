@@ -1,10 +1,18 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+const DEMO_USER_ID = 'u1';
+
 export async function GET() {
     try {
         // Get all transactions for calculations
-        const transactions = await prisma.transaction.findMany();
+        const transactions = await prisma.transaction.findMany({
+            where: {
+                account: {
+                    userId: DEMO_USER_ID
+                }
+            }
+        });
 
         // Calculate totals
         const totalIncoming = transactions
@@ -24,7 +32,9 @@ export async function GET() {
             }, {} as Record<string, number>);
 
         // Get account balances
-        const accounts = await prisma.account.findMany();
+        const accounts = await prisma.account.findMany({
+            where: { userId: DEMO_USER_ID }
+        });
         const totalBalance = accounts.reduce((sum: number, a: any) => sum + a.balance, 0);
 
         return NextResponse.json({

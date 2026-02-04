@@ -47,7 +47,7 @@ export default function TransactionTable({ transactions, title = "Recent Transac
                                     </div>
                                 </div>
                             </td>
-                            <td className="text-gofun">{t.date}</td>
+                            <td className="text-gofun">{new Date(t.date).toLocaleDateString()}</td>
                             <td><StatusChip status={t.status} /></td>
                             <td className={t.type === 'incoming' ? styles.amountIncoming : styles.amountOutgoing}>
                                 {t.type === 'incoming' ? '+' : ''}${t.amount.toFixed(2)}
