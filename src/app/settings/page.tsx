@@ -39,8 +39,7 @@ export default function SettingsPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     name: formData.name,
-                    email: formData.email,
-                    phone: formData.phone
+                    email: formData.email
                 })
             });
 
@@ -60,7 +59,8 @@ export default function SettingsPage() {
             setTimeout(() => setSaved(false), 3000);
 
         } catch (err: any) {
-            setError(err.message);
+            console.error('Settings save error:', err);
+            setError(err.message || 'An unexpected error occurred');
         } finally {
             setSaving(false);
         }

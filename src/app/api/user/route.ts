@@ -54,8 +54,7 @@ export async function GET() {
                 id: userId,
                 email: email,
                 name: `${user.firstName} ${user.lastName}`.trim() || 'New User',
-                avatar: user.imageUrl,
-                phone: null
+                avatar: user.imageUrl
             }
         });
 
@@ -85,7 +84,6 @@ export async function PATCH(request: Request) {
             data: {
                 name: body.name,
                 email: body.email,
-                phone: body.phone,
             }
         });
 

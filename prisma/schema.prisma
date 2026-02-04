@@ -12,7 +12,6 @@ model User {
   id        String    @id @default(cuid())
   name      String
   email     String    @unique
-  phone     String?
   avatar    String?
   accounts  Account[]
   bills     Bill[]
