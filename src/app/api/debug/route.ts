@@ -6,6 +6,7 @@ export const dynamic = 'force-dynamic';
 export async function GET() {
     const checks: any = {
         databaseUrl: process.env.DATABASE_URL ? 'Set (Length: ' + process.env.DATABASE_URL.length + ')' : 'Missing',
+        databaseUrlProtocol: process.env.DATABASE_URL?.split(':')[0] || 'N/A',
         authToken: process.env.TURSO_AUTH_TOKEN ? 'Set (Length: ' + process.env.TURSO_AUTH_TOKEN.length + ')' : 'Missing',
         nodeEnv: process.env.NODE_ENV,
     };
