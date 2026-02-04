@@ -1,47 +1,62 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { createClient } from '@libsql/client';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
+    const url = process.env.DATABASE_URL?.trim();
+    const authToken = process.env.TURSO_AUTH_TOKEN?.trim();
+
+    // Masking checks for safety
     const checks: any = {
-        databaseUrl: process.env.DATABASE_URL ? 'Set (Length: ' + process.env.DATABASE_URL.length + ')' : 'Missing',
-        databaseUrlProtocol: process.env.DATABASE_URL?.split(':')[0] || 'N/A',
-        authToken: process.env.TURSO_AUTH_TOKEN ? 'Set (Length: ' + process.env.TURSO_AUTH_TOKEN.length + ')' : 'Missing',
-        nodeEnv: process.env.NODE_ENV,
+        config: {
+            urlPresent: !!url,
+            // Show start of protocol
+            urlProtocol: url?.split(':')[0],
+            tokenPresent: !!authToken,
+            tokenLength: authToken?.length
+        }
     };
 
     try {
-        // Check 1: Simple Raw Query
-        // We use a try/catch here specifically for the query to ensure we capture the specific error
-        let rawQuery = null;
+        // Test 1: Direct LibSQL Client (Bypassing Prisma)
+        // This isolates if the issue is the network/client or Prisma itself
         try {
-            rawQuery = await prisma.$queryRaw`SELECT 1 as result`;
-            checks.connection = 'Success';
-            checks.rawQuery = rawQuery;
-        } catch (dbErr: any) {
-            checks.connection = 'Failed';
-            checks.connectionError = dbErr.message;
+            // Force https for the direct client test to match what we think should work
+            const directUrl = url?.replace(/^(libsql|wss):/i, 'https:') || 'file:./dev.db';
+            checks.usedUrlForDirectTest = directUrl.split(':')[0] + '://...'; // Log protocol only
+
+            const client = createClient({
+                url: directUrl,
+                authToken: authToken
+            });
+
+            const result = await client.execute("SELECT 1 as val");
+            checks.directLibSql = {
+                status: 'Success',
+                result: result.rows[0]
+            };
+        } catch (libSqlErr: any) {
+            checks.directLibSql = {
+                status: 'Failed',
+                error: libSqlErr.message,
+                code: libSqlErr.code
+            };
         }
 
-        // Check 2: Table Existence (User)
-        if (checks.connection === 'Success') {
-            try {
-                const userCount = await prisma.user.count();
-                checks.userTable = `Accessible (Count: ${userCount})`;
-            } catch (e: any) {
-                checks.userTable = `Error: ${e.message}`;
-            }
-        }
-
-        // Check 3: Table Existence (Transactions)
-        if (checks.connection === 'Success') {
-            try {
-                const txCount = await prisma.transaction.count();
-                checks.transactionTable = `Accessible (Count: ${txCount})`;
-            } catch (e: any) {
-                checks.transactionTable = `Error: ${e.message}`;
-            }
+        // Test 2: Prisma Connection
+        try {
+            const prismaResult = await prisma.$queryRaw`SELECT 1 as result`;
+            checks.prisma = {
+                status: 'Success',
+                result: prismaResult
+            };
+        } catch (prismaErr: any) {
+            checks.prisma = {
+                status: 'Failed',
+                error: prismaErr.message
+            };
         }
 
         return NextResponse.json({ status: 'ok', checks }, { status: 200 });
