@@ -43,7 +43,10 @@ export default function SettingsPage() {
                 })
             });
 
-            if (!res.ok) throw new Error('Failed to save changes');
+            if (!res.ok) {
+                const data = await res.json();
+                throw new Error(data.error || 'Failed to save changes');
+            }
 
             // Optimistically update context immediately
             updateUser({
