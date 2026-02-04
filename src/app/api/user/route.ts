@@ -66,6 +66,7 @@ export async function GET() {
 }
 
 export async function PATCH(request: Request) {
+    console.log('PATCH /api/user HIT');
     try {
         const { userId } = await auth();
         if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -79,11 +80,20 @@ export async function PATCH(request: Request) {
 
         console.log('PATCH /api/user received:', body);
 
-        const updatedUser = await prisma.user.update({
+        const user = await currentUser();
+        const avatar = user?.imageUrl || null;
+
+        const updatedUser = await prisma.user.upsert({
             where: { id: userId },
-            data: {
+            update: {
                 name: body.name,
                 email: body.email,
+            },
+            create: {
+                id: userId,
+                email: body.email,
+                name: body.name,
+                avatar: avatar
             }
         });
 
