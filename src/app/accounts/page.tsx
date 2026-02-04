@@ -10,20 +10,55 @@ export default function AccountsPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [accounts, setAccounts] = useState<Account[]>([]);
     const [loading, setLoading] = useState(true);
+    const [creating, setCreating] = useState(false);
+
+    // Form state
+    const [newAccountName, setNewAccountName] = useState('');
+    const [newAccountType, setNewAccountType] = useState('Checking');
+
+    async function fetchAccounts() {
+        try {
+            const res = await fetch('/api/accounts');
+            if (!res.ok) throw new Error('Failed to fetch accounts');
+            const data = await res.json();
+            setAccounts(data);
+        } catch (error) {
+            console.error('Error fetching accounts:', error);
+        } finally {
+            setLoading(false);
+        }
+    }
 
     useEffect(() => {
-        async function fetchAccounts() {
-            try {
-                const data = await api.accounts.getAll();
-                setAccounts(data);
-                setLoading(false);
-            } catch (error) {
-                console.error('Error fetching accounts:', error);
-                setLoading(false);
-            }
-        }
         fetchAccounts();
     }, []);
+
+    const handleCreateAccount = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setCreating(true);
+        try {
+            const res = await fetch('/api/accounts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: newAccountName,
+                    type: newAccountType
+                })
+            });
+
+            if (!res.ok) throw new Error('Failed to create account');
+
+            await fetchAccounts(); // Refresh list
+            setIsModalOpen(false);
+            setNewAccountName('');
+            setNewAccountType('Checking');
+        } catch (error) {
+            console.error('Error creating account:', error);
+            alert('Failed to create account');
+        } finally {
+            setCreating(false);
+        }
+    };
 
     if (loading) {
         return (
@@ -55,29 +90,36 @@ export default function AccountsPage() {
                 onClose={() => setIsModalOpen(false)}
                 title="Add New Account"
             >
-                <form onSubmit={(e) => { e.preventDefault(); setIsModalOpen(false); }}>
+                <form onSubmit={handleCreateAccount}>
                     <div style={{ marginBottom: '16px' }}>
                         <label style={{ display: 'block', marginBottom: '8px', color: '#F6F1E8', fontWeight: 500 }}>Account Type</label>
-                        <select style={{
-                            width: '100%',
-                            padding: '12px',
-                            borderRadius: '8px',
-                            background: '#1B2A41',
-                            border: '1px solid rgba(201,193,184,0.3)',
-                            color: '#F6F1E8',
-                            fontSize: '14px',
-                            cursor: 'pointer'
-                        }}>
-                            <option style={{ background: '#1B2A41', color: '#F6F1E8', padding: '8px' }}>Checking</option>
-                            <option style={{ background: '#1B2A41', color: '#F6F1E8', padding: '8px' }}>Savings</option>
-                            <option style={{ background: '#1B2A41', color: '#F6F1E8', padding: '8px' }}>Investment</option>
+                        <select
+                            value={newAccountType}
+                            onChange={(e) => setNewAccountType(e.target.value)}
+                            style={{
+                                width: '100%',
+                                padding: '12px',
+                                borderRadius: '8px',
+                                background: '#1B2A41',
+                                border: '1px solid rgba(201,193,184,0.3)',
+                                color: '#F6F1E8',
+                                fontSize: '14px',
+                                cursor: 'pointer'
+                            }}
+                        >
+                            <option value="Checking" style={{ background: '#1B2A41', color: '#F6F1E8', padding: '8px' }}>Checking</option>
+                            <option value="Savings" style={{ background: '#1B2A41', color: '#F6F1E8', padding: '8px' }}>Savings</option>
+                            <option value="Investment" style={{ background: '#1B2A41', color: '#F6F1E8', padding: '8px' }}>Investment</option>
                         </select>
                     </div>
                     <div style={{ marginBottom: '24px' }}>
                         <label style={{ display: 'block', marginBottom: '8px', color: '#F6F1E8', fontWeight: 500 }}>Account Name</label>
                         <input
                             type="text"
+                            value={newAccountName}
+                            onChange={(e) => setNewAccountName(e.target.value)}
                             placeholder="e.g. Vacation Fund"
+                            required
                             style={{
                                 width: '100%',
                                 padding: '12px',
@@ -89,7 +131,14 @@ export default function AccountsPage() {
                             }}
                         />
                     </div>
-                    <button type="submit" className="btn-primary" style={{ width: '100%' }}>Create Account</button>
+                    <button
+                        type="submit"
+                        className="btn-primary"
+                        style={{ width: '100%', opacity: creating ? 0.7 : 1 }}
+                        disabled={creating}
+                    >
+                        {creating ? 'Creating...' : 'Create Account'}
+                    </button>
                 </form>
             </Modal>
         </div>
