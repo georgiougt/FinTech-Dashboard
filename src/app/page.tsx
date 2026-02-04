@@ -10,6 +10,9 @@ import CashflowChart from '@/components/CashflowChart';
 import { DollarSign, TrendingDown, TrendingUp, Percent } from 'lucide-react';
 
 export default function Overview() {
+  const [analytics, setAnalytics] = useState<Analytics | null>(null);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
