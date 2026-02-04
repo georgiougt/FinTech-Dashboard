@@ -1,27 +1,87 @@
 "use client";
 
-import { useState } from 'react';
-import { User, Moon, Shield, DollarSign, Save } from 'lucide-react';
-import { USER_PROFILE } from '@/lib/data';
+import { useState, useEffect } from 'react';
+import { User, Moon, Shield, DollarSign, Save, Loader2 } from 'lucide-react';
+
+interface UserProfile {
+    id: string;
+    name: string;
+    email: string;
+    avatar: string | null;
+}
 
 export default function SettingsPage() {
-    const [formData, setFormData] = useState({
-        name: USER_PROFILE.name,
-        email: 'akira.kurosawa@example.com',
-        phone: '+81 90 1234 5678'
-    });
+    const [profile, setProfile] = useState<UserProfile | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
     const [saved, setSaved] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-    const handleSave = () => {
-        // In a real app, this would make an API call to save the data
-        console.log('Saving profile data:', formData);
+    // Form state separate from profile data
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        phone: '' // Note: Phone is not in DB schema yet, keeping as UI-only for now
+    });
 
-        // Show success message
-        setSaved(true);
+    useEffect(() => {
+        fetchProfile();
+    }, []);
 
-        // Hide success message after 3 seconds
-        setTimeout(() => setSaved(false), 3000);
+    const fetchProfile = async () => {
+        try {
+            const res = await fetch('/api/user');
+            if (!res.ok) throw new Error('Failed to load profile');
+            const data = await res.json();
+            setProfile(data);
+            setFormData({
+                name: data.name,
+                email: data.email,
+                phone: '+81 90 1234 5678' // Mock phone since it's not in DB
+            });
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
     };
+
+    const handleSave = async () => {
+        setSaving(true);
+        setError(null);
+        try {
+            const res = await fetch('/api/user', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: formData.name,
+                    email: formData.email
+                })
+            });
+
+            if (!res.ok) throw new Error('Failed to save changes');
+
+            setSaved(true);
+            setTimeout(() => setSaved(false), 3000);
+
+            // Refresh local data
+            const updated = await res.json();
+            setProfile(prev => prev ? { ...prev, ...updated } : updated);
+
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    if (loading) {
+        return <div style={{ padding: '60px', textAlign: 'center', color: '#888' }}><Loader2 className="animate-spin" size={32} style={{ margin: '0 auto 16px' }} />Loading settings...</div>;
+    }
+
+    if (error && !profile) {
+        return <div style={{ padding: '60px', textAlign: 'center', color: '#FF4D6D' }}>Error: {error}</div>;
+    }
 
     return (
         <div style={{ maxWidth: '800px' }}>
@@ -70,13 +130,19 @@ export default function SettingsPage() {
                                 ✓ Changes saved successfully
                             </div>
                         )}
+                        {error && (
+                            <div style={{ color: '#FF4D6D', fontSize: '14px', fontWeight: 500 }}>
+                                ⚠ {error}
+                            </div>
+                        )}
                         <button
                             className="btn-primary"
                             onClick={handleSave}
-                            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginLeft: 'auto' }}
+                            disabled={saving}
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginLeft: 'auto', opacity: saving ? 0.7 : 1 }}
                         >
-                            <Save size={18} />
-                            Save Changes
+                            {saving ? <Loader2 className="animate-spin" size={18} /> : <Save size={18} />}
+                            {saving ? 'Saving...' : 'Save Changes'}
                         </button>
                     </div>
                 </div>
