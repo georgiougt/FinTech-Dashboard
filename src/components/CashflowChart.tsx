@@ -21,6 +21,7 @@ export default function CashflowChart({ data }: { data?: any[] }) {
 
     // Fallback if no data provided yet
     const chartData = data || [];
+    const hasData = chartData.some((d: any) => d.amount > 0);
 
     return (
         <div className={clsx('card', styles.container)}>
@@ -39,9 +40,29 @@ export default function CashflowChart({ data }: { data?: any[] }) {
                 </div>
             </div>
 
-            <div className={styles.chartArea}>
+            <div className={styles.chartArea} style={{ position: 'relative' }}>
+                {!hasData && (
+                    <div style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        zIndex: 10,
+                        background: 'rgba(27, 42, 65, 0.4)',
+                        backdropFilter: 'blur(2px)',
+                        borderRadius: '16px'
+                    }}>
+                        <div style={{ fontSize: '14px', color: '#C9C1B8', marginBottom: '4px' }}>No activity yet</div>
+                        <div style={{ fontSize: '12px', color: '#6B7280' }}>Transactions will appear here</div>
+                    </div>
+                )}
                 <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={chartData} barSize={40}>
+                    <BarChart data={chartData} barSize={40} style={{ opacity: hasData ? 1 : 0.3 }}>
                         <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.1)" />
                         <XAxis
                             dataKey="day"
@@ -56,16 +77,18 @@ export default function CashflowChart({ data }: { data?: any[] }) {
                             tick={{ fill: '#C9C1B8', fontSize: 12 }}
                             tickFormatter={(value) => `$${value}`}
                         />
-                        <Tooltip
-                            cursor={{ fill: 'rgba(255,255,255,0.05)' }}
-                            contentStyle={{
-                                backgroundColor: '#1B2A41',
-                                borderColor: '#FF4D6D',
-                                borderRadius: '8px',
-                                color: '#F6F1E8'
-                            }}
-                            formatter={(value: any) => [`$${value}`, 'Amount']}
-                        />
+                        {hasData && (
+                            <Tooltip
+                                cursor={{ fill: 'rgba(255,255,255,0.05)' }}
+                                contentStyle={{
+                                    backgroundColor: '#1B2A41',
+                                    borderColor: '#FF4D6D',
+                                    borderRadius: '8px',
+                                    color: '#F6F1E8'
+                                }}
+                                formatter={(value: any) => [`$${value}`, 'Amount']}
+                            />
+                        )}
                         <Bar dataKey="amount" radius={[4, 4, 0, 0]}>
                             {chartData.map((entry, index) => (
                                 <Cell
