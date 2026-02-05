@@ -39,7 +39,8 @@ export default function SettingsPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     name: formData.name,
-                    email: formData.email
+                    email: formData.email,
+                    phone: formData.phone
                 })
             });
 

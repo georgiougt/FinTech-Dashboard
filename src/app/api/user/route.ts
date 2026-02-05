@@ -98,11 +98,13 @@ export async function PATCH(request: Request) {
             update: {
                 name: body.name,
                 email: body.email,
+                phone: body.phone,
             },
             create: {
                 id: userId,
                 email: body.email,
                 name: body.name,
+                phone: body.phone,
                 avatar: avatar
             }
         });
