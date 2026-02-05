@@ -11,8 +11,10 @@ import {
     Receipt,
     Settings,
     ChevronLeft,
-    ChevronRight // Added right chevron
+    ChevronRight,
+    LogOut
 } from 'lucide-react';
+import { SignOutButton } from '@clerk/nextjs';
 import styles from './Sidebar.module.css';
 import clsx from 'clsx';
 import { useSidebar } from '@/context/SidebarContext'; // Import context
@@ -56,6 +58,14 @@ export default function Sidebar() {
             </nav>
 
             <div className={styles.footer}>
+                <div style={{ padding: '0 12px 12px 12px' }}>
+                    <SignOutButton>
+                        <button className={styles.navItem} style={{ width: '100%', color: '#FF4D6D' }}>
+                            <LogOut size={20} />
+                            {!isCollapsed && <span>Sign Out</span>}
+                        </button>
+                    </SignOutButton>
+                </div>
                 <button className={styles.navItem} onClick={toggleSidebar}>
                     {isCollapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
                     {!isCollapsed && <span>Collapse</span>}
