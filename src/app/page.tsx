@@ -71,13 +71,13 @@ export default function Overview() {
         <KPIStatCard
           label="Total Balance"
           value={`$${analytics.totalBalance.toLocaleString()}`}
-          trend={8.2}
+          trend={0}
           icon={DollarSign}
         />
         <KPIStatCard
           label="Monthly Spend"
           value={`$${analytics.monthlySpend.toLocaleString()}`}
-          trend={-12.5}
+          trend={0}
           positiveIsGood={false}
           icon={TrendingDown}
         />
@@ -90,7 +90,7 @@ export default function Overview() {
         <KPIStatCard
           label="Savings Rate"
           value={`${(analytics.savingsRate * 100).toFixed(1)}%`}
-          trend={5.3}
+          trend={0}
           icon={Percent}
         />
       </div>
