@@ -52,12 +52,9 @@ export default function CardsPage() {
             <div className="card" style={{ textAlign: 'center', padding: '60px' }}>
                 <div style={{ marginBottom: '24px', opacity: 0.5 }}>
                     <CreditCardVisual
-                        id="demo"
                         last4="0000"
                         holder="YOUR NAME"
                         expiry="00/00"
-                        limit={0}
-                        isFrozen={false}
                         color="linear-gradient(135deg, #333, #111)"
                     />
                 </div>
@@ -93,7 +90,12 @@ export default function CardsPage() {
                             position: 'relative'
                         }}
                     >
-                        <CreditCardVisual {...card} />
+                        <CreditCardVisual
+                            last4={card.last4}
+                            holder={card.holder}
+                            expiry={card.expiry}
+                            color={card.color}
+                        />
                         {selectedCardId === card.id && (
                             <div style={{
                                 position: 'absolute',
