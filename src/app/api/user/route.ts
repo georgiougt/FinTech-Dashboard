@@ -97,7 +97,7 @@ export async function PATCH(request: Request) {
             where: { id: userId },
             update: {
                 name: body.name,
-                email: body.email,
+                // Email is immutable as it is the ID
                 phone: body.phone,
             },
             create: {

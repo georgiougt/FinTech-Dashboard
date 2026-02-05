@@ -99,10 +99,21 @@ export default function SettingsPage() {
                         <div>
                             <label style={{ display: 'block', marginBottom: '8px', color: '#C9C1B8', fontSize: '14px' }}>Email</label>
                             <input
-                                value={formData.email}
-                                onChange={e => setFormData({ ...formData, email: e.target.value })}
                                 type="email"
-                                style={{ width: '100%', padding: '12px', borderRadius: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(201,193,184,0.18)', color: '#F6F1E8' }}
+                                value={formData.email}
+                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                                placeholder="Official Email"
+                                disabled
+                                style={{
+                                    width: '100%',
+                                    padding: '12px',
+                                    borderRadius: '8px',
+                                    background: 'rgba(255,255,255,0.05)',
+                                    border: '1px solid rgba(201,193,184,0.18)',
+                                    color: '#F6F1E8',
+                                    opacity: 0.7,
+                                    cursor: 'not-allowed'
+                                }}
                             />
                         </div>
                         <div>
