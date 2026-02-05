@@ -9,7 +9,10 @@ import AlertsPanel from '@/components/AlertsPanel';
 import CashflowChart from '@/components/CashflowChart';
 import { DollarSign, TrendingDown, TrendingUp, Percent } from 'lucide-react';
 
+import { useUser } from '@/context/UserContext';
+
 export default function Overview() {
+  const { user } = useUser();
   const [analytics, setAnalytics] = useState<Analytics | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
@@ -60,7 +63,7 @@ export default function Overview() {
   return (
     <div className={styles.container}>
       <div className={styles.welcomeSection}>
-        <h1 className={styles.welcomeTitle}>Welcome back, Akira</h1>
+        <h1 className={styles.welcomeTitle}>Welcome back, {user?.name?.split(' ')[0] || 'User'}</h1>
         <p className={styles.welcomeSubtitle}>Here's what's happening with your finances today</p>
       </div>
 

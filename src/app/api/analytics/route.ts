@@ -1,15 +1,18 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-const DEMO_USER_ID = 'u1';
+import { auth } from '@clerk/nextjs/server';
 
 export async function GET() {
     try {
+        const { userId } = await auth();
+        if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
         // Get all transactions for calculations
         const transactions = await prisma.transaction.findMany({
             where: {
                 account: {
-                    userId: DEMO_USER_ID
+                    userId: userId
                 }
             }
         });
@@ -33,7 +36,7 @@ export async function GET() {
 
         // Get account balances
         const accounts = await prisma.account.findMany({
-            where: { userId: DEMO_USER_ID }
+            where: { userId: userId }
         });
         const totalBalance = accounts.reduce((sum: number, a: any) => sum + a.balance, 0);
 
