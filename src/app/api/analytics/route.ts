@@ -80,6 +80,30 @@ export async function GET() {
             color: c.color
         }));
 
+        // Get account balances (Restored)
+        const accounts = await prisma.account.findMany({
+            where: { userId: userId }
+        });
+        const totalBalance = accounts.reduce((sum: number, a: any) => sum + a.balance, 0);
+
+        // Generate daily activity for the last 7 days (Restored)
+        const last7Days = Array.from({ length: 7 }, (_, i) => {
+            const d = new Date();
+            d.setDate(d.getDate() - i);
+            return d.toISOString().split('T')[0];
+        }).reverse();
+
+        const dailyActivity = last7Days.map(date => {
+            const dayTotal = transactions
+                .filter((t: any) => t.date.toString().startsWith(date) && t.type === 'outgoing')
+                .reduce((sum: number, t: any) => sum + t.amount, 0);
+
+            return {
+                day: new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+                amount: dayTotal
+            };
+        });
+
         return NextResponse.json({
             totalBalance,
             totalIncoming,
