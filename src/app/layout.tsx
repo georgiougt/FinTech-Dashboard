@@ -4,6 +4,7 @@ import './globals.css';
 import { SidebarProvider } from '@/context/SidebarContext';
 import { UserProvider } from '@/context/UserContext';
 import AppLayout from '@/components/AppLayout';
+import { ClerkProvider } from '@clerk/nextjs';
 
 const outfit = Outfit({ subsets: ['latin'] });
 
@@ -18,14 +19,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={outfit.className}>
-        <UserProvider>
-          <SidebarProvider>
-            <AppLayout>{children}</AppLayout>
-          </SidebarProvider>
-        </UserProvider>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body className={outfit.className}>
+          <UserProvider>
+            <SidebarProvider>
+              <AppLayout>{children}</AppLayout>
+            </SidebarProvider>
+          </UserProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
