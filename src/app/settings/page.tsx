@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { User, Moon, Shield, DollarSign, Save, Loader2 } from 'lucide-react';
+import { User, Moon, Shield, DollarSign, Save, Loader2, Check, AlertCircle } from 'lucide-react';
 import { useUser } from '@/context/UserContext';
 import { useRouter } from 'next/navigation';
 
@@ -128,13 +128,13 @@ export default function SettingsPage() {
 
                     <div style={{ marginTop: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         {saved && (
-                            <div style={{ color: '#2BB673', fontSize: '14px', fontWeight: 500 }}>
-                                ✓ Changes saved successfully
+                            <div style={{ color: '#2BB673', fontSize: '14px', fontWeight: 500, display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                                <Check size={16} /> Changes saved successfully
                             </div>
                         )}
                         {error && (
-                            <div style={{ color: '#FF4D6D', fontSize: '14px', fontWeight: 500 }}>
-                                ⚠ {error}
+                            <div style={{ color: '#FF4D6D', fontSize: '14px', fontWeight: 500, display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                                <AlertCircle size={16} /> {error}
                             </div>
                         )}
                         <button

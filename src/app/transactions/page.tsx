@@ -5,7 +5,7 @@ import TransactionTable from '@/components/TransactionTable';
 import Drawer from '@/components/Drawer';
 import Modal from '@/components/Modal';
 import { api, Transaction } from '@/lib/api';
-import { Filter, Download, Plus } from 'lucide-react';
+import { Filter, Download, Plus, ReceiptText } from 'lucide-react';
 
 export default function TransactionsPage() {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -131,7 +131,9 @@ export default function TransactionsPage() {
                 {/* existing drawer content */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                     <div style={{ textAlign: 'center', padding: '32px 0', borderBottom: '1px solid var(--color-border)' }}>
-                        <div style={{ fontSize: '48px', marginBottom: '16px' }}>🛍️</div>
+                        <div style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '64px', height: '64px', borderRadius: '16px', background: 'rgba(255,255,255,0.05)', margin: '0 auto 16px', color: 'var(--color-primary, #6366f1)' }}>
+                            <ReceiptText size={32} />
+                        </div>
                         <div style={{ fontSize: '36px', fontWeight: 700, color: 'var(--color-shiro)' }}>--</div>
                         <div style={{ color: 'var(--color-gofun-gray)', marginTop: '8px' }}>Select a transaction</div>
                     </div>

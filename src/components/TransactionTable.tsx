@@ -2,22 +2,40 @@ import { Transaction } from '@/lib/data';
 import styles from './TransactionTable.module.css';
 import StatusChip from './StatusChip';
 import clsx from 'clsx';
+import { 
+    Utensils, 
+    Train, 
+    ShoppingBag, 
+    Film, 
+    Zap, 
+    HeartPulse, 
+    DollarSign, 
+    TrendingUp, 
+    Repeat, 
+    Laptop, 
+    Package 
+} from 'lucide-react';
 
 const CategoryIcon = ({ category }: { category: string }) => {
-    const icons: Record<string, string> = {
-        'Food': '🍜',
-        'Transport': '🚇',
-        'Shopping': '🛍️',
-        'Entertainment': '🎬',
-        'Utilities': '⚡',
-        'Health': '🏥',
-        'Salary': '💰',
-        'Investment': '📈',
-        'Subscription': '🔄',
-        'Software': '💻',
-        'Other': '📦',
+    const iconProps = { size: 18, strokeWidth: 2 };
+    const icons: Record<string, React.ReactNode> = {
+        'Food': <Utensils {...iconProps} />,
+        'Transport': <Train {...iconProps} />,
+        'Shopping': <ShoppingBag {...iconProps} />,
+        'Entertainment': <Film {...iconProps} />,
+        'Utilities': <Zap {...iconProps} />,
+        'Health': <HeartPulse {...iconProps} />,
+        'Salary': <DollarSign {...iconProps} />,
+        'Investment': <TrendingUp {...iconProps} />,
+        'Subscription': <Repeat {...iconProps} />,
+        'Software': <Laptop {...iconProps} />,
+        'Other': <Package {...iconProps} />,
     };
-    return <span style={{ fontSize: '20px' }}>{icons[category] || icons['Other']}</span>;
+    return (
+        <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-shiro)' }}>
+            {icons[category] || icons['Other']}
+        </span>
+    );
 };
 
 export default function TransactionTable({ transactions, title = "Recent Transactions" }: { transactions: Transaction[], title?: string }) {
