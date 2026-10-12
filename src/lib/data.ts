@@ -30,7 +30,7 @@ export interface Bill {
 
 export const USER_PROFILE = {
   name: 'Akira Kurosawa',
-  avatar: '/avatars/akira.jpg',
+  avatar: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=200',
   notificationCount: 3,
 };
 
